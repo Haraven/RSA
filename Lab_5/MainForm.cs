@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Windows.Forms;
 
@@ -13,7 +14,7 @@ namespace Lab_5
             _helper = new EncryptionHelper();
             _helper.K = 2;
             _helper.L = 3;
-
+            _helper.InitRSA();
             UpdateSettingsDisplay();
             UpdateKeyDisplay();
         }
@@ -156,6 +157,7 @@ namespace Lab_5
         private void UpdateOutput(string msg)
         {
             label_output.Text = "Output: " + msg;
+            _output = msg;
         }
 
         private void OnEncryptClicked(object sender, EventArgs e)
@@ -176,7 +178,7 @@ namespace Lab_5
 
         private void UpdateKeyDisplay()
         {
-            label_keys.Text = "Ke: (" + _helper.Ke.Item1.ToString() + ", " + _helper.Ke.Item2.ToString() + ") | Kd: " + _helper.Kd;
+            label_info.Text = "Ke: (" + _helper.Ke.Item1.ToString() + ", " + _helper.Ke.Item2.ToString() + ") | Kd: " + _helper.Kd + " | (p, q): (" + _helper.P + ", " + _helper.Q + ")";
         }
 
         private void OnGenerateKeysClicked(object sender, MouseEventArgs e)
@@ -204,8 +206,17 @@ namespace Lab_5
             _helper.L = (int)input_l.Value;
         }
 
+        private void OnMoveOutputClicked(object sender, EventArgs e)
+        {
+            _input = _output;
+            UpdateInput(_input);
+            UpdateOutput("");
+        }
+
         private string _input;
+        private string _output;
 
         private EncryptionHelper _helper;
+
     }
 }

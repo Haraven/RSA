@@ -7,11 +7,7 @@ namespace Lab_5
     public class EncryptionHelper
     {
         private static int KEYCOUNT = 27;
-
-        public EncryptionHelper()
-        {
-            InitRSA();
-        }
+        private static int RAND_POS_OFFSET = 5;
 
         private BigInteger GenerateE(BigInteger phi)
         {
@@ -30,9 +26,22 @@ namespace Lab_5
 
         public EncryptionHelper InitRSA()
         {
-            BigInteger p = 31, q = 53; // TODO: randomly generate p, q
-            BigInteger n = p * q;
-            BigInteger phi = MathHelper.Euler(p, q);
+            List<BigInteger> prime_list = MathHelper.PrimeSieve((int)Math.Sqrt((int)Math.Pow(26, _k)), (int)Math.Sqrt((int)Math.Pow(27, _l)));
+            Random rand = new Random();
+
+            int rand_pos = rand.Next(0, prime_list.Count);
+            _p = prime_list[rand_pos];
+            int offset;
+            do
+            {
+                offset = rand.Next(-RAND_POS_OFFSET, RAND_POS_OFFSET);
+            } while (offset == 0);
+            if (rand_pos + offset < 0 || rand_pos + offset >= prime_list.Count)
+                offset = -offset;
+            _q = prime_list[rand_pos + offset];
+
+            BigInteger n = _p * _q;
+            BigInteger phi = MathHelper.Euler(_p, _q);
             BigInteger e = GenerateE(phi);
 
             _ke = new Tuple<BigInteger, BigInteger>(n, e);
@@ -82,14 +91,14 @@ namespace Lab_5
             return --mypow;
         }
 
-        private string KeycodeToString(BigInteger _keycode)
+        private string KeycodeToString(BigInteger _keycode, int blocksize)
         {
             string res = "";
 
-            int l = _l - 1;
-            while (_keycode != 0 && l >= 0)
+            --blocksize;
+            while (_keycode != 0 && blocksize >= 0)
             {
-                int mypow = l--;
+                int mypow = blocksize--;
                 BigInteger pow27 = (BigInteger)Math.Pow(27, mypow);
                 BigInteger letter = _keycode / pow27;
                 res += GetCharFor(letter);
@@ -112,7 +121,7 @@ namespace Lab_5
             return res;
         }
 
-        private static BigInteger Pow(BigInteger a, BigInteger pow, BigInteger mod)
+        private static BigInteger RepeatedSquaringModularExponentiation(BigInteger a, BigInteger pow, BigInteger mod)
         {
             BigInteger res = a;
             BigInteger last_pow = GetHighestPowOfNFrom(pow, 2);
@@ -138,9 +147,16 @@ namespace Lab_5
 
         private string InternalEncryptRSA(string msg)
         {
-            BigInteger _keycode = Pow(GetKeycodeFor(msg), _ke.Item2, _ke.Item1);
+            BigInteger _keycode = RepeatedSquaringModularExponentiation(GetKeycodeFor(msg), _ke.Item2, _ke.Item1);
 
-            return KeycodeToString(_keycode);
+            return KeycodeToString(_keycode, _l);
+        }
+
+        private string InternalDecryptRSA(string msg)
+        {
+            BigInteger _keycode = RepeatedSquaringModularExponentiation(GetKeycodeFor(msg), _kd, _ke.Item1);
+
+            return KeycodeToString(_keycode, _k);
         }
 
         private string PadWithBlanks(string msg)
@@ -167,8 +183,12 @@ namespace Lab_5
         public string DecryptRSA(string msg)
         {
             string encrypted_msg = "";
-
-            // TODO: add code for decryption
+            int i = 0;
+            for (; i < msg.Length; i += _l)
+            {
+                string block = PadWithBlanks((i + _l < msg.Length) ? msg.Substring(i, _l) : msg.Substring(i, msg.Length - i));
+                encrypted_msg += InternalDecryptRSA(block);
+            }
 
             return encrypted_msg;
         }
@@ -221,9 +241,27 @@ namespace Lab_5
             }
         }
 
+        public BigInteger P
+        {
+            get
+            {
+                return _p;
+            }
+        }
+
+        public BigInteger Q
+        {
+            get
+            {
+                return _q;
+            }
+        }
+
         private int _k; // encryption blocksize
         private int _l; // decryption blocksize
 
+        private BigInteger _p;
+        private BigInteger _q;
         private Tuple<BigInteger, BigInteger> _ke; // encryption key Ke = (n, e)
         private BigInteger _kd; // decryption key Kd = d
     }

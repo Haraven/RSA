@@ -58,7 +58,7 @@
             this.btn_w = new System.Windows.Forms.Button();
             this.btn_backspace = new System.Windows.Forms.Button();
             this.label_input = new System.Windows.Forms.Label();
-            this.label_keys = new System.Windows.Forms.Label();
+            this.label_info = new System.Windows.Forms.Label();
             this.keyboard_panel = new System.Windows.Forms.TableLayoutPanel();
             this.btn_q = new System.Windows.Forms.Button();
             this.labels_panel = new System.Windows.Forms.TableLayoutPanel();
@@ -73,6 +73,7 @@
             this.input_k = new System.Windows.Forms.NumericUpDown();
             this.options_panel = new System.Windows.Forms.TableLayoutPanel();
             this.btn_encrypt = new System.Windows.Forms.Button();
+            this.btn_move_output = new System.Windows.Forms.Button();
             this.keyboard_panel.SuspendLayout();
             this.labels_panel.SuspendLayout();
             this.main_panel.SuspendLayout();
@@ -398,9 +399,9 @@
             // btn_decrypt
             // 
             this.btn_decrypt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_decrypt.Location = new System.Drawing.Point(571, 3);
+            this.btn_decrypt.Location = new System.Drawing.Point(429, 3);
             this.btn_decrypt.Name = "btn_decrypt";
-            this.btn_decrypt.Size = new System.Drawing.Size(278, 23);
+            this.btn_decrypt.Size = new System.Drawing.Size(207, 23);
             this.btn_decrypt.TabIndex = 5;
             this.btn_decrypt.Text = "Decrypt message";
             this.btn_decrypt.UseVisualStyleBackColor = true;
@@ -424,7 +425,7 @@
             this.btn_backspace.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_backspace.Location = new System.Drawing.Point(3, 3);
             this.btn_backspace.Name = "btn_backspace";
-            this.btn_backspace.Size = new System.Drawing.Size(278, 23);
+            this.btn_backspace.Size = new System.Drawing.Size(207, 23);
             this.btn_backspace.TabIndex = 4;
             this.btn_backspace.Text = "Undo";
             this.btn_backspace.UseVisualStyleBackColor = true;
@@ -442,16 +443,16 @@
             this.label_input.Text = "Input: ";
             this.label_input.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label_keys
+            // label_info
             // 
-            this.label_keys.AutoSize = true;
-            this.label_keys.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_keys.Location = new System.Drawing.Point(569, 0);
-            this.label_keys.Name = "label_keys";
-            this.label_keys.Size = new System.Drawing.Size(280, 29);
-            this.label_keys.TabIndex = 2;
-            this.label_keys.Text = "Ke: | Kd:";
-            this.label_keys.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.label_info.AutoSize = true;
+            this.label_info.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label_info.Location = new System.Drawing.Point(569, 0);
+            this.label_info.Name = "label_info";
+            this.label_info.Size = new System.Drawing.Size(280, 29);
+            this.label_info.TabIndex = 2;
+            this.label_info.Text = "Ke: | Kd:";
+            this.label_info.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // keyboard_panel
             // 
@@ -522,7 +523,7 @@
             this.labels_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.34F));
             this.labels_panel.Controls.Add(this.label_output, 1, 0);
             this.labels_panel.Controls.Add(this.label_input, 0, 0);
-            this.labels_panel.Controls.Add(this.label_keys, 2, 0);
+            this.labels_panel.Controls.Add(this.label_info, 2, 0);
             this.labels_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labels_panel.Location = new System.Drawing.Point(3, 318);
             this.labels_panel.Name = "labels_panel";
@@ -611,6 +612,7 @@
             this.btn_generate_keys.TabIndex = 7;
             this.btn_generate_keys.Text = "Generate keys";
             this.btn_generate_keys.UseVisualStyleBackColor = true;
+            this.btn_generate_keys.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnGenerateKeysClicked);
             // 
             // k_panel
             // 
@@ -649,13 +651,15 @@
             // 
             // options_panel
             // 
-            this.options_panel.ColumnCount = 3;
+            this.options_panel.ColumnCount = 4;
+            this.options_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.options_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.options_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.options_panel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.options_panel.Controls.Add(this.btn_encrypt, 1, 0);
             this.options_panel.Controls.Add(this.btn_backspace, 0, 0);
             this.options_panel.Controls.Add(this.btn_decrypt, 2, 0);
+            this.options_panel.Controls.Add(this.btn_move_output, 3, 0);
             this.options_panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.options_panel.Location = new System.Drawing.Point(3, 283);
             this.options_panel.Name = "options_panel";
@@ -667,14 +671,25 @@
             // btn_encrypt
             // 
             this.btn_encrypt.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btn_encrypt.Location = new System.Drawing.Point(287, 3);
+            this.btn_encrypt.Location = new System.Drawing.Point(216, 3);
             this.btn_encrypt.Name = "btn_encrypt";
-            this.btn_encrypt.Size = new System.Drawing.Size(278, 23);
+            this.btn_encrypt.Size = new System.Drawing.Size(207, 23);
             this.btn_encrypt.TabIndex = 0;
             this.btn_encrypt.Text = "Encrypt message";
             this.btn_encrypt.UseVisualStyleBackColor = true;
             this.btn_encrypt.Click += new System.EventHandler(this.OnEncryptClicked);
             this.btn_encrypt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnKeyPress);
+            // 
+            // btn_move_output
+            // 
+            this.btn_move_output.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btn_move_output.Location = new System.Drawing.Point(642, 3);
+            this.btn_move_output.Name = "btn_move_output";
+            this.btn_move_output.Size = new System.Drawing.Size(207, 23);
+            this.btn_move_output.TabIndex = 6;
+            this.btn_move_output.Text = "Copy output";
+            this.btn_move_output.UseVisualStyleBackColor = true;
+            this.btn_move_output.Click += new System.EventHandler(this.OnMoveOutputClicked);
             // 
             // MainForm
             // 
@@ -733,7 +748,7 @@
         private System.Windows.Forms.Button btn_w;
         private System.Windows.Forms.Button btn_backspace;
         private System.Windows.Forms.Label label_input;
-        private System.Windows.Forms.Label label_keys;
+        private System.Windows.Forms.Label label_info;
         private System.Windows.Forms.TableLayoutPanel keyboard_panel;
         private System.Windows.Forms.Button btn_q;
         private System.Windows.Forms.TableLayoutPanel labels_panel;
@@ -748,6 +763,7 @@
         private System.Windows.Forms.Label label_l;
         private System.Windows.Forms.NumericUpDown input_k;
         private System.Windows.Forms.NumericUpDown input_l;
+        private System.Windows.Forms.Button btn_move_output;
     }
 }
 
